@@ -19,11 +19,11 @@ cmds.setAttr('%s.localScaleY'%fixLocShape[0], 10)
 cmds.setAttr('%s.localScaleZ'%fixLocShape[0], 10)
 
 #parent constraint fix locator to sliding bone, unparent to get bone location before sliding
-cmds.parentConstraint (selectedJoint[0],"fixLoc")
-cmds.parent ("fixLoc_parentConstraint1", removeObject= True)
+constraintTemp = cmds.parentConstraint(selectedJoint[0], fixLoc)
+cmds.delete(constraintTemp)
 
 #constraint sliding bone to locator to fix sliding
-cmds.parentConstraint ("fixLoc",selectedJoint[0], sr=["x","y","z"])
+cmds.parentConstraint (fixLoc, selectedJoint[0], sr=["x","y","z"])
 
 #set weight from current frame to "1", weight from previous frame to "0"
 cmds.disconnectAttr ("%s.blendParent1"%selectedJoint[0],"pairBlend1.weight") 
