@@ -9,9 +9,14 @@ import maya.cmds
 selectedJoint = cmds.ls(sl=True)
 cmds.select(clear=True)
 
-#create fix locator
-cmds.spaceLocator(name="fixLoc")
-cmds.scale (10,10,10, "fixLoc")
+#create fix locator and assign to variable
+fixLoc = cmds.spaceLocator(name="fixLoc")
+
+#scale locator's shape instead of transform (Safer)
+fixLocShape = cmds.listRelatives(fixLoc)
+cmds.setAttr('%s.localScaleX'%fixLocShape[0], 10)
+cmds.setAttr('%s.localScaleY'%fixLocShape[0], 10)
+cmds.setAttr('%s.localScaleZ'%fixLocShape[0], 10)
 
 #parent constraint fix locator to sliding bone, unparent to get bone location before sliding
 cmds.parentConstraint (selectedJoint[0],"fixLoc")
