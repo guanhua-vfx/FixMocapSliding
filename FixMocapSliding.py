@@ -5,21 +5,28 @@
 
 import maya.cmds
 
-#create fix locator
-cmds.spaceLocator(name="fixLoc")
-cmds.scale (10,10,10, "fixLoc")
+#get selected sliding bone
+selectedJoint = cmds.ls(sl=True)
+cmds.select(clear=True)
 
-#FIND AND REPLACE "Character1_Hips" with Sliding Bone Name#
+#create fix locator and assign to variable
+fixLoc = cmds.spaceLocator(name="fixLoc")
+
+#scale locator's shape instead of transform (Safer)
+fixLocShape = cmds.listRelatives(fixLoc)
+cmds.setAttr('%s.localScaleX'%fixLocShape[0], 10)
+cmds.setAttr('%s.localScaleY'%fixLocShape[0], 10)
+cmds.setAttr('%s.localScaleZ'%fixLocShape[0], 10)
 
 #parent constraint fix locator to sliding bone, unparent to get bone location before sliding
-cmds.parentConstraint ("Character1_Hips","fixLoc")
-cmds.parent ("fixLoc_parentConstraint1", removeObject= True)
+constraintTemp = cmds.parentConstraint(selectedJoint[0], fixLoc)
+cmds.delete(constraintTemp)
 
 #constraint sliding bone to locator to fix sliding
-cmds.parentConstraint ("fixLoc","Character1_Hips", sr=["x","y","z"])
+cmds.parentConstraint (fixLoc, selectedJoint[0], sr=["x","y","z"])
 
 #set weight from current frame to "1", weight from previous frame to "0"
-cmds.disconnectAttr ("Character1_Hips.blendParent1","pairBlend1.weight") 
+cmds.disconnectAttr ("%s.blendParent1"%selectedJoint[0],"pairBlend1.weight") 
 cmds.select ("pairBlend1")
 cmds.setKeyframe (v=1, at="weight")
 currTime = cmds.currentTime(q=1)
